@@ -45,11 +45,7 @@ const AnchorItem = ({ label, href, onClick }) => (
 const Tags = ({ list }) => {
     return (
         <p className={style['p-style']}>
-            <LoopItem
-                target={TagItem}
-                list={list}
-                each={getTagItemProps}
-            />
+            {loop(TagItem, list, getTagItemProps)}
         </p>
     );
 };
