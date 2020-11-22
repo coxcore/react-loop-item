@@ -1,13 +1,13 @@
 {
   "name": "react-loop-item",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A simple component that repeatedly creates components.",
-  "author": "coxcore",
+  "author": "Park U-yeong <ascript0@gmail.com>",
   "license": "MIT",
   "repository": "coxcore/react-loop-item",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
-  "source": "src/index.js",
+  "source": "src/index.jsx",
   "engines": {
     "node": ">=10"
   },
@@ -49,5 +49,18 @@
   },
   "files": [
     "dist"
+  ],
+  "keywords": [
+    "react",
+    "loop",
+    "for",
+    "list",
+    "each",
+    "item",
+    "repeat",
+    "jsx",
+    "component",
+    "coxcore",
+    "ascript"
   ]
 }
