@@ -61,7 +61,7 @@ const Item = ({ contents }) => <p>{contents}</p>;
 ### Using `loop` method
 
 ```jsx
-import { loop } from "react-loop-item";
+import LoopItem, { loop } from "react-loop-item";
 
 // using loop method instead of <LoopItem>
 const List = () => (
@@ -164,10 +164,11 @@ const ListContainer = () => {
   ];
 
   // formatter for <Item> props of <AnchorList>
-  // {url, description, visited} => {key, label, href, onClick}
   const getProps = (data, index) => {
+    // raw datas (element and index of siteList)
     const { url, description, visited } = data;
 
+    // props
     return {
       key: url, // if key is omitted, index is used
       label: description,
