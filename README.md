@@ -26,14 +26,14 @@ import LoopItem from "react-loop-item";
 const Articles = () => {
   // [list]: <Item> props
   const itemProps = [
-    { contents: "1. Sample A" },
-    { contents: "2. Sample B" },
+    { contents: "1. Article sample A" },
+    { contents: "2. Article sample B" },
   ];
 
   return <LoopItem target={Item} list={itemProps} />;
 };
 
-// [target]: list item
+// [target]: list item component
 const Item = ({ contents }) => <p>{contents}</p>;
 ```
 
@@ -44,18 +44,37 @@ import LoopItem from "react-loop-item";
 
 const Articles = () => {
   // [list]: raw datas
-  const model = ["Sample A", "Sample B"];
+  const model = ["sample A", "sample B"];
 
   // [each]: formatter for <Item> props
   const getProps = (string, index) => ({
-    contents: `${index + 1}. ${string}`,
+    contents: `${index + 1}. Article ${string}`,
   });
 
   return <LoopItem target={Item} list={model} each={getProps} />;
 };
 
-// [target]: list item
+// [target]: list item component
 const Item = ({ contents }) => <p>{contents}</p>;
+```
+
+### Using `instead` props
+
+```jsx
+import LoopItem from "react-loop-item";
+
+const Articles = () => {
+  // [list] : no data
+  const model = [];
+
+  return <LoopItem target={Item} list={model} instead={noData} />;
+};
+
+// [target]: list item component
+const Item = ({ contents }) => <p>{contents}</p>;
+
+// [instead]: element to render instead of blank
+const noData = <span>no data</span>;
 ```
 
 ### Using `loop` method
@@ -64,13 +83,9 @@ const Item = ({ contents }) => <p>{contents}</p>;
 import LoopItem, { loop } from "react-loop-item";
 
 // using loop method instead of <LoopItem>
-const List = () => (
-  <ul>
-    <LoopItem target={Item} list={model} each={getProps} />
-    {/* or */}
-    {loop(Item, model, getProps)}
-  </ul>
-);
+<LoopItem target={Item} list={arr} each={fnc} instead={element} />;
+// or
+loop(Item, arr, fnc, element);
 ```
 
 ## Props
@@ -90,6 +105,12 @@ If `each` is omitted, `list` element is used as it is.
 
 > `each` has two arguments. (element and index of `list`)
 
+### instead (optional)
+
+Elements to return instead of null when `list` is empty. Use strings or elements, no Components.
+
+> target={Components} instead={strings or elements}
+
 ## Examples
 
 ### AnchorList.jsx
@@ -101,14 +122,11 @@ import LoopItem from "react-loop-item";
 import style from "./AnchorList.module.css";
 
 // <AnchorList> needs raw datas array and <Item> props formatter.
-const AnchorList = ({ list, each }) =>
-  list && list.length ? (
-    <ul className={style["ul-style"]}>
-      <LoopItem target={Item} list={list} each={each} />
-    </ul>
-  ) : (
-    <div>no data</div>
-  );
+const AnchorList = ({ list, each }) => (
+  <ul className={style["ul-style"]}>
+    <LoopItem target={Item} list={list} each={each} instead={noData} />
+  </ul>
+);
 
 // check target props
 const Item = ({ label, href, onClick }) => (
@@ -118,6 +136,8 @@ const Item = ({ label, href, onClick }) => (
     </a>
   </li>
 );
+
+const noData = <li>no data</li>;
 
 export default AnchorList;
 ```

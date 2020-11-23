@@ -13,9 +13,7 @@ const Articles = () => {
         contents: `${index + 1}. ${string}`,
     });
 
-    return (
-        <LoopItem target={ArticleItem} list={model} each={getProps} />
-    );
+    return <LoopItem target={ArticleItem} list={model} each={getProps} />;
 };
 
 // [target]: list item
@@ -42,10 +40,10 @@ const AnchorItem = ({ label, href, onClick }) => (
 
 // if you already know about raw datas,
 // define <Item> props formatter in this component.
-const Tags = ({ list }) => {
+const Tags = ({ list, instead }) => {
     return (
         <p className={style['p-style']}>
-            {loop(TagItem, list, getTagItemProps)}
+            {loop(TagItem, list, getTagItemProps, instead)}
         </p>
     );
 };
@@ -91,6 +89,11 @@ const ListContainer = () => {
             {/* your components */}
             <AnchorList list={siteList} each={getProps} />
             <Tags list={tagList} />
+            <Tags list={null} />
+            <Tags instead={1} />
+            <Tags list={[]} instead={'no data'} />
+            <Tags list={[]} instead={<span>no data</span>} />
+            <Tags />
         </div>
     );
 };
