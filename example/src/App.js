@@ -55,6 +55,7 @@ const TagItem = ({ value }) => (
 // convert string to <Item> props
 const getTagItemProps = (text, index) => ({
     value: text,
+    onChange: (e) => console.log(e),
 });
 
 const ListContainer = () => {
@@ -94,6 +95,7 @@ const ListContainer = () => {
             <Tags list={[]} instead={'no data'} />
             <Tags list={[]} instead={<span>no data</span>} />
             <Tags />
+            <LoopItem target={'input'} list={tagList} each={getTagItemProps} />
         </div>
     );
 };
