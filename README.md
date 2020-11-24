@@ -18,13 +18,13 @@ yarn add react-loop-item
 
 ## Usage
 
-### Using `LoopItem`
+### `LoopItem` component
 
 ```jsx
 import LoopItem from "react-loop-item";
 
 const Articles = () => {
-  // [list]: <Item> props
+  // [list]: <Item> props list
   const itemProps = [
     { contents: "1. Article sample A" },
     { contents: "2. Article sample B" },
@@ -33,56 +33,15 @@ const Articles = () => {
   return <LoopItem target={Item} list={itemProps} />;
 };
 
-// [target]: list item component
+// [target]: item component of list
 const Item = ({ contents }) => <p>{contents}</p>;
 ```
 
-### Using `each` props
-
-```jsx
-import LoopItem from "react-loop-item";
-
-const Articles = () => {
-  // [list]: raw datas
-  const model = ["sample A", "sample B"];
-
-  // [each]: formatter for <Item> props
-  const getProps = (string, index) => ({
-    contents: `${index + 1}. Article ${string}`,
-  });
-
-  return <LoopItem target={Item} list={model} each={getProps} />;
-};
-
-// [target]: list item component
-const Item = ({ contents }) => <p>{contents}</p>;
-```
-
-### Using `instead` props
-
-```jsx
-import LoopItem from "react-loop-item";
-
-const Articles = () => {
-  // [list] : no data
-  const model = [];
-
-  return <LoopItem target={Item} list={model} instead={noData} />;
-};
-
-// [target]: list item component
-const Item = ({ contents }) => <p>{contents}</p>;
-
-// [instead]: element to render instead of blank
-const noData = <span>no data</span>;
-```
-
-### Using `loop` method
+### `loop` method
 
 ```jsx
 import LoopItem, { loop } from "react-loop-item";
 
-// using loop method instead of <LoopItem>
 <LoopItem target={Item} list={arr} each={fnc} instead={element} />;
 // or
 loop(Item, arr, fnc, element);
@@ -94,9 +53,23 @@ loop(Item, arr, fnc, element);
 
 Component to be created repeatedly.
 
+```jsx
+// component
+<LoopItem target={ItemComponent} />;
+// or tag name
+<LoopItem target={"img"} />;
+```
+
 ### list (optional)
 
-Array for list.
+Item data array or number of items.
+
+```jsx
+// array
+<LoopItem target={Item} list={[{ foo: "bar" }, { foo: "bar" }]} />;
+// or count
+<LoopItem target={Item} list={5} />;
+```
 
 ### each (optional)
 
@@ -105,11 +78,49 @@ If `each` is omitted, `list` element is used as it is.
 
 > `each` has two arguments. (element and index of `list`)
 
+```jsx
+// [list]: raw datas
+const model = [{ foo: "bar" }, { foo: "bar" }];
+
+// [each]: formatter for <Anchor> props
+const getProps = (data, index) => ({
+  // properties
+  value: data.foo,
+  // callbacks
+  onClick: (event) => {
+    event.preventDefault();
+    console.log(model, data, index);
+  },
+});
+
+// [target]: <Ancher> has value and onClick
+const Anchor = ({ value, onClick }) => (
+  <a href="#" onClick={onClick}>
+    {value}
+  </a>
+);
+
+<LoopItem target={Anchor} list={model} each={getProps} />;
+```
+
 ### instead (optional)
 
-Elements to return instead of null when `list` is empty. Use strings or elements, no Components.
+Element to return instead of null when `list` is empty. Use strings or element, no component.
 
-> target={Components} instead={strings or elements}
+> target={Component} instead={strings or element}
+
+```jsx
+// [list] : no data
+const model = [];
+
+// [instead]: element to render instead of blank
+const noData = <span>no data</span>;
+
+// do not use component
+// const noData = () => <span>no data</span>;
+
+<LoopItem target={Item} list={model} instead={noData} />;
+```
 
 ## Examples
 
@@ -121,7 +132,7 @@ import LoopItem from "react-loop-item";
 
 import style from "./AnchorList.module.css";
 
-// <AnchorList> needs raw datas array and <Item> props formatter.
+// <AnchorList> needs raw data array and <Item> props formatter.
 const AnchorList = ({ list, each }) => (
   <ul className={style["ul-style"]}>
     <LoopItem target={Item} list={list} each={each} instead={noData} />
