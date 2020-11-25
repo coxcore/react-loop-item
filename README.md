@@ -226,6 +226,96 @@ const ListContainer = () => {
 export default ListContainer;
 ```
 
+## Tips
+
+### Injecting Callbacks
+
+If the structure of the raw data is fixed, the component using LoopItem defines a props formatter for the list item component.
+Then use the parent component's state or props to develop a function to use as a callback.
+
+```jsx
+import React from "react";
+import LoopItem from "react-loop-item";
+
+import style from "./AnchorList.module.css";
+
+// <AnchorList> needs raw datas and <Item> callbacks injector.
+const AnchorList = ({ list, each }) => {
+  // formatter for <Item> props
+  const getProps = ({ url, description, visited }, index) => ({
+    // properties
+    key: url,
+    href: url,
+    label: description,
+
+    // inject callbacks
+    ...each(data, index),
+  });
+
+  return (
+    <ul className={style["ul-style"]}>
+      <LoopItem target={Item} list={list} each={getProps} instead={noData} />
+    </ul>
+  );
+};
+
+// check target props
+const Item = ({ label, href, onClick }) => (
+  <li className={style["li-style"]}>
+    <a href={href} onClick={onClick}>
+      {label}
+    </a>
+  </li>
+);
+
+const noData = <li>no data</li>;
+
+export default AnchorList;
+```
+
+```jsx
+import React from "react";
+import AnchorList from "./AnchorList";
+
+const ListContainer = () => {
+  // model
+  const model = [
+    { url: "aaa.com", description: "aaa site", visited: 4 },
+    { url: "bbb.com", description: "bbb site", visited: 2 },
+    { url: "ccc.com", description: "ccc site", visited: 8 },
+  ];
+
+  const updateVisited = (url, count) => {
+    // do something for updating model
+  };
+
+  // callbacks injector for <Item> of <AnchorList>
+  const getCallbacks = (data, index) => {
+    // raw datas (element and index of model)
+    const { url, description, visited } = data;
+
+    // callbacks
+    return {
+      onClick(event) {
+        event.preventDefault();
+
+        // update visited
+        updateVisited(url, visited + 1);
+      },
+    };
+  };
+
+  return (
+    <div>
+      {/* your components */}
+      <AnchorList list={model} each={getCallbacks} />
+    </div>
+  );
+};
+
+export default ListContainer;
+```
+
 ## License
 
 MIT © [coxcore](https://github.com/coxcore)
