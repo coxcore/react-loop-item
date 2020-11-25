@@ -230,8 +230,8 @@ export default ListContainer;
 
 ### Injecting Callbacks
 
-If the structure of the raw data is fixed, the component using LoopItem defines a props formatter for the list item component.
-Then use the parent component's state or props to develop a function to use as a callback.
+If the structure of the raw data is fixed, the component using `LoopItem` defines props a formatter for the list item component.
+Then use the parent component's state or props to develop functions to use as callback.
 
 ```jsx
 import React from "react";
@@ -242,19 +242,23 @@ import style from "./AnchorList.module.css";
 // <AnchorList> needs raw datas and <Item> callbacks injector.
 const AnchorList = ({ list, each }) => {
   // formatter for <Item> props
-  const getProps = ({ url, description, visited }, index) => ({
-    // properties
-    key: url,
-    href: url,
-    label: description,
+  const getItemProps = (data, index) => {
+    const { url, description, visited } = data;
 
-    // inject callbacks
-    ...each(data, index),
-  });
+    return {
+      // properties
+      key: url,
+      href: url,
+      label: description,
+
+      // inject <Item> callbacks
+      ...each(data, index),
+    };
+  };
 
   return (
     <ul className={style["ul-style"]}>
-      <LoopItem target={Item} list={list} each={getProps} instead={noData} />
+      <LoopItem target={Item} list={list} each={getItemProps} />
     </ul>
   );
 };
@@ -268,8 +272,6 @@ const Item = ({ label, href, onClick }) => (
   </li>
 );
 
-const noData = <li>no data</li>;
-
 export default AnchorList;
 ```
 
@@ -278,20 +280,15 @@ import React from "react";
 import AnchorList from "./AnchorList";
 
 const ListContainer = () => {
-  // model
-  const model = [
-    { url: "aaa.com", description: "aaa site", visited: 4 },
-    { url: "bbb.com", description: "bbb site", visited: 2 },
-    { url: "ccc.com", description: "ccc site", visited: 8 },
-  ];
+  // code to manage model
+  // ...
 
   const updateVisited = (url, count) => {
     // do something for updating model
   };
 
   // callbacks injector for <Item> of <AnchorList>
-  const getCallbacks = (data, index) => {
-    // raw datas (element and index of model)
+  const getItemCallbacks = (data, index) => {
     const { url, description, visited } = data;
 
     // callbacks
@@ -307,7 +304,79 @@ const ListContainer = () => {
 
   return (
     <div>
-      {/* your components */}
+      {/* your component */}
+      <AnchorList list={model} each={getItemCallbacks} />
+    </div>
+  );
+};
+
+export default ListContainer;
+```
+
+### Rendering Optimization
+
+If you only need to render one of the item components, use `useMemo` to avoid unnecessary rendering.
+
+```jsx
+import React, { useMemo } from "react";
+import LoopItem from "react-loop-item";
+
+import style from "./AnchorList.module.css";
+
+const AnchorList = ({ list, each }) => (
+  <ul className={style["ul-style"]}>
+    <LoopItem target={Item} list={list} each={getProps} />
+  </ul>
+);
+
+// use useMemo to use rendered element
+const Item = (props) =>
+  useMemo(
+    () => {
+      const { href, label, onClick } = props;
+
+      return (
+        <li className={style["li-style"]}>
+          <a href={href} onClick={onClick}>
+            {label}
+          </a>
+        </li>
+      );
+    },
+    [props] // check props object or each property
+  );
+
+export default AnchorList;
+```
+
+```jsx
+import React, { useMemo } from "react";
+import AnchorList from "./AnchorList";
+
+const ListContainer = () => {
+  // code to manage model
+  // ...
+
+  // props formatter
+  const getProps = (data, index) =>
+    // use useMemo to use cached props object
+    useMemo(
+      () => {
+        const { url, description, visited } = data;
+
+        return {
+          key: url,
+          href: url,
+          label: description,
+          onClick: (event) => {},
+        };
+      },
+      [index, data] // check index, data or each property
+    );
+
+  return (
+    <div>
+      {/* your component */}
       <AnchorList list={model} each={getCallbacks} />
     </div>
   );
