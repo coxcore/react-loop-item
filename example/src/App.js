@@ -96,7 +96,7 @@ const ListContainer = () => {
             <Tags list={[]} instead={<span>no data</span>} />
             <Tags />
             <LoopItem target={'input'} list={tagList} each={getTagItemProps} />
-            <LoopItem target={'input'} list={3} />
+            <LoopItem target={'input'} list={3} hidden />
         </div>
     );
 };

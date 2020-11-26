@@ -15,7 +15,17 @@ const getArray = (n) => {
     return n;
 };
 
-export const loop = (Item, list, each = (data) => data, instead = null) => {
+export const loop = (
+    Item,
+    list,
+    each = (data) => data,
+    instead = null,
+    hidden = false
+) => {
+    if (hidden) {
+        return null;
+    }
+
     const datas = getArray(list);
 
     return Item && datas && datas.length > 0
@@ -26,8 +36,8 @@ export const loop = (Item, list, each = (data) => data, instead = null) => {
         : instead;
 };
 
-const LoopItem = ({ target, list, each, instead }) =>
-    loop(target, list, each, instead);
+const LoopItem = ({ target, list, each, instead, hidden }) =>
+    loop(target, list, each, instead, hidden);
 
 LoopItem.propTypes = {
     target: PropTypes.elementType || PropTypes.any,

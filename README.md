@@ -42,9 +42,15 @@ const Item = ({ contents }) => <p>{contents}</p>;
 ```jsx
 import LoopItem, { loop } from "react-loop-item";
 
-<LoopItem target={Item} list={arr} each={fnc} instead={element} />;
+<LoopItem
+  target={Item}
+  list={arr}
+  each={fnc}
+  instead={element}
+  hidden={boolean}
+/>;
 // or
-loop(Item, arr, fnc, element);
+loop(Item, arr, fnc, element, boolean);
 ```
 
 ## Props
@@ -120,6 +126,16 @@ const noData = <span>no data</span>;
 // const noData = () => <span>no data</span>;
 
 <LoopItem target={Item} list={model} instead={noData} />;
+```
+
+### hidden (optional)
+
+Prevent rendering.
+
+```jsx
+<LoopItem target={Item} list={model} hidden />
+// or
+<LoopItem target={Item} list={model} hidden={true} />
 ```
 
 ## Examples
