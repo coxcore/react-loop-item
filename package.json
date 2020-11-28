@@ -50,8 +50,10 @@
     "react-scripts": "^3.4.1"
   },
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
+  "typings": "./index.d.ts",
   "keywords": [
     "react",
     "loop",

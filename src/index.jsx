@@ -17,7 +17,7 @@ const getArray = (n) => {
 
 export const loop = (
     Item,
-    list,
+    list = null,
     each = (data) => data,
     instead = null,
     hidden = false
