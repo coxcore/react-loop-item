@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
 type Item = Function | string;
 type propsList = Array<any> | number | null;
@@ -7,15 +7,15 @@ export function loop(
   Item: Item,
   list?: propsList,
   each?: Function,
-  instead?: ReactNode,
+  instead?: React.ReactNode,
   hidden?: boolean
-): ReactNode;
+): React.ReactNode;
 
 export interface LoopItemProps {
   target: Item;
   list?: propsList;
   each?: Function;
-  instead?: ReactNode;
+  instead?: React.ReactNode;
   hidden?: boolean;
 }
 
