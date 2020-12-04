@@ -24,7 +24,7 @@ yarn add react-loop-item
 import LoopItem from "react-loop-item";
 
 const Articles = () => {
-  // [list]: <Item> props list
+  // [list]: <Item> props
   const itemProps = [
     { contents: "1. Article sample A" },
     { contents: "2. Article sample B" },
@@ -57,6 +57,8 @@ loop(Item, arr, fnc, element, boolean);
 
 ### target (required)
 
+> [type] elementType(React.Component, React.FC, React.forwardRef, string)
+
 Component to be created repeatedly.
 
 ```jsx
@@ -67,6 +69,8 @@ Component to be created repeatedly.
 ```
 
 ### list (optional)
+
+> [type] Array | number
 
 Item data array or number of items.
 
@@ -79,7 +83,9 @@ Item data array or number of items.
 
 ### each (optional)
 
-Callback function that converts each element of `list` to `target` props when rendering `target` component.
+> [type] Function
+
+Callback function that converts each element of `list` to props for `target` when rendering `target` component.
 If `each` is omitted, `list` element is used as it is.
 
 > `each` has two arguments. (element and index of `list`)
@@ -111,6 +117,8 @@ const Anchor = ({ value, onClick }) => (
 
 ### instead (optional)
 
+> [type] React.ReactNode
+
 Element to return instead of null when `list` is empty. Use strings or element, no component.
 
 > target={Component} instead={strings or element}
@@ -129,6 +137,8 @@ const noData = <span>no data</span>;
 ```
 
 ### hidden (optional)
+
+> [type] boolean
 
 Prevent rendering.
 

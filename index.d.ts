@@ -1,22 +1,24 @@
 import React from 'react';
 
-type Item = Function | string;
-type propsList = Array<any> | number | null;
+type forwardRef = {render: Function};
+
+type Component = Function | string | forwardRef;
+type eachCallback = (data:any, index?:number) => (object | null);
 
 export function loop(
-  Item: Item,
-  list?: propsList,
-  each?: Function,
+  Item: Component,
+  list?: Array<any> | number | null,
+  each?: eachCallback | null,
   instead?: React.ReactNode,
-  hidden?: boolean
+  hidden?: boolean | any
 ): React.ReactNode;
 
 export interface LoopItemProps {
-  target: Item;
-  list?: propsList;
-  each?: Function;
+  target: Component;
+  list?: Array<any> | number | null;
+  each?: eachCallback | null;
   instead?: React.ReactNode;
-  hidden?: boolean;
+  hidden?: boolean | any;
 }
 
 declare const LoopItem: React.FC<LoopItemProps>;
