@@ -1,24 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const getArray = (list) => {
-    if (list instanceof Array) {
-        return list;
-    }
-
-    if (typeof list === 'number' && list > 0) {
-        const arr = Array(list);
-
-        for (let i = 0; i < list; i++) {
-            arr[i] = i + 1;
-        }
-
-        return arr;
-    }
-
-    return null;
-};
-
 export const loop = (
     Item,
     list = null,
@@ -30,21 +12,39 @@ export const loop = (
         return null;
     }
 
-    const datas = getArray(list);
+    const datas = Item && getArray(list);
+
+    if (!datas) {
+        return instead;
+    }
+
     const getProps = typeof each === 'function' ? each : DEFULT_EACH;
 
-    return Item && datas && datas.length > 0
-        ? datas.map((data, index) => {
-              const props = getProps(data, index);
-              return <Item key={index} {...props} />;
-          })
-        : instead;
+    return datas.map((data, index) => {
+        return <Item key={index} {...getProps(data, index)} />;
+    });
 };
 
 const LoopItem = ({ target, list, each, instead, hidden }) =>
     loop(target, list, each, instead, hidden);
 
 const DEFULT_EACH = (data) => data;
+
+const getArray = (list) => {
+    if (Array.isArray(list) && list.length > 0) {
+        return list;
+    }
+
+    if (typeof list === 'number' && list > 0) {
+        const arr = Array(list);
+        for (let i = 0; i < list; i++) {
+            arr[i] = i + 1;
+        }
+        return arr;
+    }
+
+    return null;
+};
 
 LoopItem.propTypes = {
     target:
