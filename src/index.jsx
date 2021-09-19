@@ -44,6 +44,27 @@ const withMemo = (data, each, memo, index) => (Item) => {
     }, [Item, data, each, key, idx]);
 };
 
+export const List = ({
+    tag = null,
+    target,
+    list,
+    each = null,
+    instead = null,
+    hidden = false,
+    memo = false,
+    ...wrapProps
+}) => {
+    const items = loop(target, list, each, null, hidden, memo);
+
+    if (!items) {
+        return instead;
+    }
+
+    const Wrap = typeof tag === 'string' ? tag.toLowerCase() : null;
+
+    return Wrap ? <Wrap {...wrapProps}>{items}</Wrap> : items;
+};
+
 const DEFULT_EACH = (data) => data;
 
 const getArray = (list) => {
@@ -80,6 +101,11 @@ LoopItem.propTypes = {
     instead: PropTypes.node,
     hidden: PropTypes.any,
     memo: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+};
+
+ListWrap.propTypes = {
+    ...LoopItem.propTypes,
+    tag: PropTypes.string,
 };
 
 export default LoopItem;

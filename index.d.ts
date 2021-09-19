@@ -23,6 +23,13 @@ export interface LoopItemProps {
     memo?: string | boolean | null;
 }
 
+export interface ListProps extends LoopItemProps {
+    tag?: string | null;
+    [key: string]: string | any;
+}
+
+export const List: React.FC<ListProps>;
+
 declare const LoopItem: React.FC<LoopItemProps>;
 
 export default LoopItem;
