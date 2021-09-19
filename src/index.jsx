@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 export const loop = (
@@ -6,7 +6,8 @@ export const loop = (
     list = null,
     each = null,
     instead = null,
-    hidden = false
+    hidden = false,
+    memo = false
 ) => {
     if (hidden) {
         return null;
@@ -21,12 +22,27 @@ export const loop = (
     const getProps = typeof each === 'function' ? each : DEFULT_EACH;
 
     return datas.map((data, index) => {
-        return <Item key={index} {...getProps(data, index)} />;
+        if (!memo) {
+            const props = getProps(data, index);
+            return props ? <Item key={index} {...props} /> : null;
+        }
+
+        return withMemo(data, getProps, memo, index)(Item);
     });
 };
 
-const LoopItem = ({ target, list, each, instead, hidden }) =>
-    loop(target, list, each, instead, hidden);
+const LoopItem = ({ target, list, each, instead, hidden, memo }) =>
+    loop(target, list, each, instead, hidden, memo);
+
+const withMemo = (data, each, memo, index) => (Item) => {
+    const key = getKey(data[memo]);
+    const idx = key === undefined ? index : undefined;
+
+    return useMemo(() => {
+        const props = each(data, idx);
+        return props && <Item key={key ?? idx} {...props} />;
+    }, [Item, data, each, key, idx]);
+};
 
 const DEFULT_EACH = (data) => data;
 
@@ -46,6 +62,11 @@ const getArray = (list) => {
     return null;
 };
 
+const getKey = (key) => {
+    const keyType = typeof key;
+    return keyType === 'string' || keyType === 'number' ? key : undefined;
+};
+
 LoopItem.propTypes = {
     target:
         PropTypes.elementType ||
@@ -58,6 +79,7 @@ LoopItem.propTypes = {
     each: PropTypes.func,
     instead: PropTypes.node,
     hidden: PropTypes.any,
+    memo: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 export default LoopItem;
