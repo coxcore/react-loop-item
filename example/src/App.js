@@ -1,5 +1,6 @@
 import React from 'react';
 import LoopItem, { loop } from 'react-loop-item';
+import MemoList from './MemoList';
 
 const style = {};
 
@@ -107,6 +108,8 @@ const ListContainer = () => {
 const App = () => {
     return (
         <div>
+            <MemoList memo />
+            <MemoList />
             <Articles />
             <ListContainer />
         </div>
