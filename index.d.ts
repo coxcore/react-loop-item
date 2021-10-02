@@ -1,11 +1,10 @@
 import React from 'react';
 
 type forwardRef = { render: Function };
-
 type Component = Function | string | forwardRef;
 type eachCallback = (data: any, index?: number) => object | null;
 
-export function loop(
+export declare function loop(
     Item: Component,
     list?: Array<any> | number | null,
     each?: eachCallback | null,
@@ -28,8 +27,7 @@ export interface ListProps extends LoopItemProps {
     [key: string]: string | any;
 }
 
-export const List: React.FC<ListProps>;
-
-declare const LoopItem: React.FC<LoopItemProps>;
+export declare const LoopItem: React.FC<LoopItemProps>;
+export declare const ListWrap: React.FC<ListProps>;
 
 export default LoopItem;

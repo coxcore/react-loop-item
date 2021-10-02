@@ -27,24 +27,14 @@ export const loop = (
             return props ? <Item key={index} {...props} /> : null;
         }
 
-        return withMemo(data, getProps, memo, index)(Item);
+        return cache(data, getProps, memo, index)(Item);
     });
 };
 
-const LoopItem = ({ target, list, each, instead, hidden, memo }) =>
+export const LoopItem = ({ target, list, each, instead, hidden, memo }) =>
     loop(target, list, each, instead, hidden, memo);
 
-const withMemo = (data, each, memo, index) => (Item) => {
-    const key = getKey(data[memo]);
-    const idx = key === undefined ? index : undefined;
-
-    return useMemo(() => {
-        const props = each(data, idx);
-        return props && <Item key={key ?? idx} {...props} />;
-    }, [Item, data, each, key, idx]);
-};
-
-export const List = ({
+export const ListWrap = ({
     tag = null,
     target,
     list,
@@ -66,6 +56,16 @@ export const List = ({
 };
 
 const DEFULT_EACH = (data) => data;
+
+const cache = (data, each, memo, index) => (Item) => {
+    const key = getKey(data[memo]);
+    const idx = key === undefined ? index : undefined;
+
+    return useMemo(() => {
+        const props = each(data, idx);
+        return props && <Item key={key !== undefined ? key : idx} {...props} />;
+    }, [Item, data, each, key, idx]);
+};
 
 const getArray = (list) => {
     if (Array.isArray(list) && list.length > 0) {
