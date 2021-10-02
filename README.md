@@ -21,7 +21,9 @@ yarn add react-loop-item
 ### `LoopItem` component
 
 ```jsx
-import LoopItem from "react-loop-item";
+import { LoopItem } from "react-loop-item";
+// or
+// import LoopItem from 'react-loop-item";
 
 const Articles = () => {
   // [list]: <Item> props
@@ -37,10 +39,41 @@ const Articles = () => {
 const Item = ({ contents }) => <p>{contents}</p>;
 ```
 
+### `ListWrap` component
+
+> `[version] ^1.1.0`
+
+```jsx
+import { ListWrap } from "react-loop-item";
+
+const Articles = () => {
+  // [list]: <Item> props
+  const itemProps = [
+    { contents: "1. Article sample A" },
+    { contents: "2. Article sample B" },
+  ];
+
+  return (
+    <ListWrap
+      // list tag
+      tag="ul"
+      className="ul-class"
+      data-description="add any ul attributes"
+      // LoopItem props
+      target={Item}
+      list={itemProps}
+    />
+  );
+};
+
+// [target]: item component of list
+const Item = ({ contents }) => <li>{contents}</li>;
+```
+
 ### `loop` method
 
 ```jsx
-import LoopItem, { loop } from "react-loop-item";
+import { LoopItem, loop } from "react-loop-item";
 
 <LoopItem
   target={Item}
@@ -48,16 +81,17 @@ import LoopItem, { loop } from "react-loop-item";
   each={fnc}
   instead={element}
   hidden={boolean}
+  memo={boolean}
 />;
 // or
-loop(Item, arr, fnc, element, boolean);
+loop(Item, list, each, instead, hidden, memo);
 ```
 
 ## Props
 
 ### target (required)
 
-> [type] elementType(React.Component, React.FC, React.forwardRef, string)
+> `[type] elementType(React.Component, React.FC, React.forwardRef, string)`
 
 Component to be created repeatedly.
 
@@ -70,7 +104,7 @@ Component to be created repeatedly.
 
 ### list (optional)
 
-> [type] Array | number
+> `[type] Array | number`
 
 Item data array or number of items.
 
@@ -83,7 +117,7 @@ Item data array or number of items.
 
 ### each (optional)
 
-> [type] Function
+> `[type] Function`
 
 Callback function that converts each element of `list` to props for `target` when rendering `target` component.
 If `each` is omitted, `list` element is used as it is.
@@ -115,6 +149,20 @@ const Anchor = ({ value, onClick }) => (
 <LoopItem target={Anchor} list={model} each={getProps} />;
 ```
 
+### tag (optional)
+
+> `[type] string`, `[version] ^1.1.0`, `[for] ListWrap`
+
+Set tag name of parent element to wrap item.
+
+```jsx
+<ListWrap tag="div" className="tag-example" target={item} list={model}> />
+// or
+<div className="tag-example">
+  <LoopItem target={Child} list={model}>
+</div>
+```
+
 ### instead (optional)
 
 > [type] React.ReactNode
@@ -138,7 +186,7 @@ const noData = <span>no data</span>;
 
 ### hidden (optional)
 
-> [type] boolean
+> `[type] boolean`
 
 Prevent rendering.
 
@@ -148,21 +196,41 @@ Prevent rendering.
 <LoopItem target={Item} list={model} hidden={true} />
 ```
 
+### memo (optional)
+
+> `[type] string | boolean`, `[version] ^1.1.0`
+
+Whether to cache `target` using React `useMemo`.
+
+To use this feature, enter prop name of `target` you want to use as `key` in list, or `true`.
+Use it when absolutely necessary. Frequent use of 'useMemo' is not recommended.
+
+```jsx
+<LoopItem target={Item} list={model} memo="id" />
+// or
+<LoopItem target={Item} list={model} memo />
+```
+
 ## Examples
 
 ### AnchorList.jsx
 
 ```jsx
 import React from "react";
-import LoopItem from "react-loop-item";
+import { ListWrap } from "react-loop-item";
 
 import style from "./AnchorList.module.css";
 
 // <AnchorList> needs raw data array and <Item> props formatter.
 const AnchorList = ({ list, each }) => (
-  <ul className={style["ul-style"]}>
-    <LoopItem target={Item} list={list} each={each} instead={noData} />
-  </ul>
+  <ListWrap
+    tag="ul"
+    className={style["ul-style"]}
+    target={Item}
+    list={list}
+    each={each}
+    instead={noData}
+  />
 );
 
 // check target props
@@ -261,7 +329,7 @@ Then use the parent component's state or props to develop functions to use as ca
 
 ```jsx
 import React from "react";
-import LoopItem from "react-loop-item";
+import { LoopItem } from "react-loop-item";
 
 import style from "./AnchorList.module.css";
 
@@ -341,74 +409,66 @@ export default ListContainer;
 
 ### Rendering Optimization
 
-If you only need to render one of the item components, use `useMemo` to avoid unnecessary rendering.
+If rendering optimization is required, set the `memo` option.
+
+For this to work smoothly, you need to manage the elements of the list as immutable objects. And make sure the references to the callback functions don't change.
 
 ```jsx
-import React, { useMemo } from "react";
-import LoopItem from "react-loop-item";
+import React, { useReducer, useCallback } from "react";
+import { ListWrap } from "react-loop-item";
 
-import style from "./AnchorList.module.css";
+// demo data
+const siteList = [
+  { url: "aaa.com", description: "aaa site", visited: 4 },
+  { url: "bbb.com", description: "bbb site", visited: 2 },
+  { url: "ccc.com", description: "ccc site", visited: 8 },
+];
 
-const AnchorList = ({ list, each }) => (
-  <ul className={style["ul-style"]}>
-    <LoopItem target={Item} list={list} each={getProps} />
-  </ul>
-);
-
-// use useMemo to use rendered element
-const Item = (props) =>
-  useMemo(
-    () => {
-      const { href, label, onClick } = props;
-
-      return (
-        <li className={style["li-style"]}>
-          <a href={href} onClick={onClick}>
-            {label}
-          </a>
-        </li>
-      );
-    },
-    [props] // check props object or each property
+// list reducer
+const reducer = (state, url) =>
+  state.map((item) =>
+    // returns new object only if it is a target.
+    item.url !== url
+      ? item
+      : {
+          ...item,
+          visited: item.visited + 1,
+        }
   );
 
-export default AnchorList;
-```
+const MemoList = () => {
+  // visit is dispatch
+  const [list, visit] = useReducer(reducer, siteList);
 
-```jsx
-import React, { useMemo } from "react";
-import AnchorList from "./AnchorList";
-
-const ListContainer = () => {
-  // code to manage model
-  // ...
-
-  // props formatter
-  const getProps = (data, index) =>
-    // use useMemo to use cached props object
-    useMemo(
-      () => {
-        const { url, description, visited } = data;
-
-        return {
-          key: url,
-          href: url,
-          label: description,
-          onClick: (event) => {},
-        };
+  // cached each
+  const each = useCallback(
+    (data, index) => ({
+      ...data,
+      onClick(event) {
+        event.preventDefault();
+        visit(data.url);
       },
-      [index, data] // check index, data or each property
-    );
+    }),
+    [visit] // visit does not change the reference
+  );
 
+  // try changing memo
+  return <ListWrap tag="ul" target={Anchor} list={list} each={each} memo />;
+};
+
+const Anchor = ({ url, description, visited, onClick }) => {
+  // check rendering
+  console.log("rendering!", url);
   return (
-    <div>
-      {/* your component */}
-      <AnchorList list={model} each={getCallbacks} />
-    </div>
+    <li>
+      <a href={url} onClick={onClick}>
+        {description}({visited})
+      </a>
+    </li>
   );
 };
 
-export default ListContainer;
+export default MemoList;
 ```
 
 ## License
