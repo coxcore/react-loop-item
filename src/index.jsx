@@ -6,7 +6,8 @@ export const loop = (
     list = null,
     each = null,
     instead = null,
-    hidden = false
+    hidden = false,
+    memo = false
 ) => {
     if (hidden) {
         return null;
@@ -21,13 +22,29 @@ export const loop = (
     const getProps = typeof each === 'function' ? each : DEFULT_EACH;
 
     return datas.map((data, index) => {
-        const props = getProps(data, index);
-        return props ? <Item key={index} {...props} /> : null;
+        if (!memo) {
+            const props = getProps(data, index);
+            return props ? <Item key={index} {...props} /> : null;
+        }
+
+        const key = getKey(data[memo]);
+        const idx = key === undefined ? index : undefined;
+        const itemKey = key !== undefined ? key : idx;
+
+        return (
+            <MemoItem
+                key={itemKey}
+                Item={Item}
+                data={data}
+                each={getProps}
+                index={idx}
+            />
+        );
     });
 };
 
-export const LoopItem = ({ target, list, each, instead, hidden }) =>
-    loop(target, list, each, instead, hidden);
+export const LoopItem = ({ target, list, each, instead, hidden, memo }) =>
+    loop(target, list, each, instead, hidden, memo);
 
 export const ListWrap = ({
     tag = null,
@@ -36,9 +53,10 @@ export const ListWrap = ({
     each = null,
     instead = null,
     hidden = false,
+    memo = false,
     ...wrapProps
 }) => {
-    const items = loop(target, list, each, null, hidden);
+    const items = loop(target, list, each, null, hidden, memo);
 
     if (!items) {
         return instead;
@@ -50,6 +68,11 @@ export const ListWrap = ({
 };
 
 const DEFULT_EACH = (data) => data;
+
+const MemoItem = React.memo(function Memo({ Item, data, each, index }) {
+    const props = each(data, index);
+    return props && <Item {...props} />;
+});
 
 const getArray = (list) => {
     if (Array.isArray(list) && list.length > 0) {
@@ -84,6 +107,7 @@ LoopItem.propTypes = {
     each: PropTypes.func,
     instead: PropTypes.node,
     hidden: PropTypes.any,
+    memo: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 ListWrap.propTypes = {
