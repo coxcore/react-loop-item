@@ -75,7 +75,7 @@ const Item = ({ contents }) => <li>{contents}</li>;
 ```jsx
 import { LoopItem, loop } from "react-loop-item";
 
-loop(Item, list, each, instead, hidden, memo);
+loop(Item, list, each, instead, hidden);
 // or
 <LoopItem
   target={Item}
@@ -83,7 +83,6 @@ loop(Item, list, each, instead, hidden, memo);
   each={fnc}
   instead={element}
   hidden={boolean}
-  memo={boolean}
 />;
 ```
 
@@ -194,21 +193,6 @@ Prevent rendering.
 <LoopItem target={Item} list={model} hidden />
 // or
 <LoopItem target={Item} list={model} hidden={true} />
-```
-
-### memo (optional)
-
-> `[type] string | boolean`, `[version] ^1.1.0`
-
-Whether to cache `target` using React `useMemo`.
-
-To use this feature, enter prop name of `target` you want to use as `key` in list, or `true`.
-Use it when absolutely necessary. Frequent use of `useMemo` is not recommended.
-
-```jsx
-<LoopItem target={Item} list={model} memo="id" />
-// or
-<LoopItem target={Item} list={model} memo />
 ```
 
 ## Examples
@@ -408,73 +392,6 @@ const Item = ({ label, href, onClick }) => (
 );
 
 export default AnchorList;
-```
-
-### Rendering Optimization
-
-If rendering optimization is required, set the `memo` option.
-
-`LoopItem` uses React `useMemo` to observe the `each` callback reference and `list`'s each element reference.
-
-For this to work smoothly, you need to manage the elements of the list as immutable objects.
-And make sure that the reference to the `each` callback doesn't change without reason.
-
-```jsx
-import React, { useReducer, useCallback } from "react";
-import { ListWrap } from "react-loop-item";
-
-// demo data
-const siteList = [
-  { url: "aaa.com", description: "aaa site", visited: 4 },
-  { url: "bbb.com", description: "bbb site", visited: 2 },
-  { url: "ccc.com", description: "ccc site", visited: 8 },
-];
-
-// list reducer
-const reducer = (state, url) =>
-  state.map((item) =>
-    // returns new object only if it is a target.
-    item.url !== url
-      ? item
-      : {
-          ...item,
-          visited: item.visited + 1,
-        }
-  );
-
-const MemoList = () => {
-  // visit is dispatch
-  const [list, visit] = useReducer(reducer, siteList);
-
-  // cached each
-  const each = useCallback(
-    (data, index) => ({
-      ...data,
-      onClick(event) {
-        event.preventDefault();
-        visit(data.url);
-      },
-    }),
-    [visit] // visit does not change the reference
-  );
-
-  // try changing memo
-  return <ListWrap tag="ul" target={Anchor} list={list} each={each} memo />;
-};
-
-const Anchor = ({ url, description, visited, onClick }) => {
-  // check rendering
-  console.log("rendering!", url);
-  return (
-    <li>
-      <a href={url} onClick={onClick}>
-        {description}({visited})
-      </a>
-    </li>
-  );
-};
-
-export default MemoList;
 ```
 
 ## License

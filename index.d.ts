@@ -9,8 +9,7 @@ export declare function loop(
     list?: Array<any> | number | null,
     each?: eachCallback | null,
     instead?: React.ReactNode,
-    hidden?: boolean | any,
-    memo?: string | boolean | null
+    hidden?: boolean | any
 ): React.ReactNode;
 
 export interface LoopItemProps {
@@ -19,7 +18,6 @@ export interface LoopItemProps {
     each?: eachCallback | null;
     instead?: React.ReactNode;
     hidden?: boolean | any;
-    memo?: string | boolean | null;
 }
 
 export interface ListProps extends LoopItemProps {
