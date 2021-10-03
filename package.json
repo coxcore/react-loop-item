@@ -1,6 +1,6 @@
 {
   "name": "react-loop-item",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A simple component that repeatedly creates components.",
   "author": "Park U-yeong <ascript0@gmail.com>",
   "license": "MIT",
