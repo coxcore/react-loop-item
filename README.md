@@ -75,6 +75,8 @@ const Item = ({ contents }) => <li>{contents}</li>;
 ```jsx
 import { LoopItem, loop } from "react-loop-item";
 
+loop(Item, list, each, instead, hidden, memo);
+// or
 <LoopItem
   target={Item}
   list={arr}
@@ -83,8 +85,6 @@ import { LoopItem, loop } from "react-loop-item";
   hidden={boolean}
   memo={boolean}
 />;
-// or
-loop(Item, list, each, instead, hidden, memo);
 ```
 
 ## Props
@@ -153,7 +153,7 @@ const Anchor = ({ value, onClick }) => (
 
 > `[type] string`, `[version] ^1.1.0`, `[for] ListWrap`
 
-Set tag name of parent element to wrap item.
+Set tag name of parent element to wrap items.
 
 ```jsx
 <ListWrap tag="div" className="tag-example" target={item} list={model}> />
@@ -203,7 +203,7 @@ Prevent rendering.
 Whether to cache `target` using React `useMemo`.
 
 To use this feature, enter prop name of `target` you want to use as `key` in list, or `true`.
-Use it when absolutely necessary. Frequent use of 'useMemo' is not recommended.
+Use it when absolutely necessary. Frequent use of `useMemo` is not recommended.
 
 ```jsx
 <LoopItem target={Item} list={model} memo="id" />
@@ -242,7 +242,8 @@ const Item = ({ label, href, onClick }) => (
   </li>
 );
 
-const noData = <li>no data</li>;
+// what to display instead of the <ul>
+const noData = <div>no data</div>;
 
 export default AnchorList;
 ```
@@ -251,14 +252,16 @@ export default AnchorList;
 
 ```jsx
 import React from "react";
-import { loop } from "react-loop-item";
+import { ListWrap } from "react-loop-item";
 
 import style from "./Tags.module.css";
 
 // if you already know about raw datas,
 // define <Item> props formatter in this component.
 const Tags = ({ list }) => (
-  <p className={style["p-style"]}>{loop(Item, list, getProps)}</p>
+  <p className={style["p-style"]}>
+    <LoopItem target={Item} list={list} each={getProps} />
+  </p>
 );
 
 const Item = ({ value }) => (
@@ -329,6 +332,44 @@ Then use the parent component's state or props to develop functions to use as ca
 
 ```jsx
 import React from "react";
+import AnchorList from "./AnchorList";
+
+const ListContainer = () => {
+  // code to manage model
+  // ...
+
+  const updateVisited = (url, count) => {
+    // do something for updating model
+  };
+
+  // callbacks injector for <Item> of <AnchorList>
+  const getItemCallbacks = (data, index) => {
+    const { url, description, visited } = data;
+
+    // callbacks
+    return {
+      onClick(event) {
+        event.preventDefault();
+
+        // update visited
+        updateVisited(url, visited + 1);
+      },
+    };
+  };
+
+  return (
+    <div>
+      {/* your component */}
+      <AnchorList list={model} each={getItemCallbacks} />
+    </div>
+  );
+};
+
+export default ListContainer;
+```
+
+```jsx
+import React from "react";
 import { LoopItem } from "react-loop-item";
 
 import style from "./AnchorList.module.css";
@@ -369,49 +410,14 @@ const Item = ({ label, href, onClick }) => (
 export default AnchorList;
 ```
 
-```jsx
-import React from "react";
-import AnchorList from "./AnchorList";
-
-const ListContainer = () => {
-  // code to manage model
-  // ...
-
-  const updateVisited = (url, count) => {
-    // do something for updating model
-  };
-
-  // callbacks injector for <Item> of <AnchorList>
-  const getItemCallbacks = (data, index) => {
-    const { url, description, visited } = data;
-
-    // callbacks
-    return {
-      onClick(event) {
-        event.preventDefault();
-
-        // update visited
-        updateVisited(url, visited + 1);
-      },
-    };
-  };
-
-  return (
-    <div>
-      {/* your component */}
-      <AnchorList list={model} each={getItemCallbacks} />
-    </div>
-  );
-};
-
-export default ListContainer;
-```
-
 ### Rendering Optimization
 
 If rendering optimization is required, set the `memo` option.
 
-For this to work smoothly, you need to manage the elements of the list as immutable objects. And make sure the references to the callback functions don't change.
+`LoopItem` uses React `useMemo` to observe the `each` callback reference and `list`'s each element reference.
+
+For this to work smoothly, you need to manage the elements of the list as immutable objects.
+And make sure that the reference to the `each` callback doesn't change without reason.
 
 ```jsx
 import React, { useReducer, useCallback } from "react";
