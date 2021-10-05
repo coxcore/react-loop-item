@@ -156,7 +156,7 @@ const Anchor = ({ value, onClick }) => (
 Set tag name of parent element to wrap items.
 
 ```jsx
-<ListWrap tag="div" className="tag-example" target={item} list={model}> />
+<ListWrap tag="div" className="tag-example" target={Child} list={model}> />
 // or
 <div className="tag-example">
   <LoopItem target={Child} list={model}>
