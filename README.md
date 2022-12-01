@@ -18,12 +18,10 @@ yarn add react-loop-item
 
 ## Usage
 
-### `LoopItem` component
+### `<LoopItem>`
 
 ```jsx
 import { LoopItem } from "react-loop-item";
-// or
-// import LoopItem from 'react-loop-item";
 
 const Articles = () => {
   // [list]: <Item> props
@@ -35,11 +33,11 @@ const Articles = () => {
   return <LoopItem target={Item} list={itemProps} />;
 };
 
-// [target]: item component of list
+// [target]: Item component of list
 const Item = ({ contents }) => <p>{contents}</p>;
 ```
 
-### `ListWrap` component
+### `<ListWrap>`
 
 > `[version] ^1.1.0`
 
@@ -55,28 +53,28 @@ const Articles = () => {
 
   return (
     <ListWrap
-      // list tag
+      // List tag
       tag="ul"
       className="ul-class"
-      data-description="add any ul attributes"
-      // LoopItem props
+      data-description="Add any ul attributes"
+      // <LoopItem> props
       target={Item}
       list={itemProps}
     />
   );
 };
 
-// [target]: item component of list
+// [target]: Item component of list
 const Item = ({ contents }) => <li>{contents}</li>;
 ```
 
-### `loop` method
+### `loop()`
 
 ```jsx
 import { LoopItem, loop } from "react-loop-item";
 
 loop(Item, list, each, instead, hidden, memo);
-//or
+// or
 <LoopItem
   target={Item}
   list={arr}
@@ -96,9 +94,10 @@ loop(Item, list, each, instead, hidden, memo);
 Component to be created repeatedly.
 
 ```jsx
-// component
+// Component
 <LoopItem target={ItemComponent} />;
-// or tag name
+
+// Tag name
 <LoopItem target={"img"} />;
 ```
 
@@ -109,9 +108,10 @@ Component to be created repeatedly.
 Item data array or number of items.
 
 ```jsx
-// array
+// Array
 <LoopItem target={Item} list={[{ foo: "bar" }, { foo: "bar" }]} />;
-// or count
+
+// Count
 <LoopItem target={Item} list={5} />;
 ```
 
@@ -125,14 +125,14 @@ If `each` is omitted, `list` element is used as it is.
 > `each` has two arguments. (element and index of `list`)
 
 ```jsx
-// [list]: raw datas
+// [list]: Raw datas
 const model = [{ foo: "bar" }, { foo: "bar" }];
 
-// [each]: formatter for <Anchor> props
+// [each]: Formatter for <Anchor> props
 const getProps = (data, index) => ({
-  // properties
+  // Properties
   value: data.foo,
-  // callbacks
+  // Callbacks
   onClick: (event) => {
     event.preventDefault();
     console.log(model, data, index);
@@ -172,13 +172,13 @@ Element to return instead of null when `list` is empty. Use strings or element, 
 > target={Component} instead={strings or element}
 
 ```jsx
-// [list] : no data
+// [list] : No data
 const model = [];
 
-// [instead]: element to render instead of blank
+// [instead]: Element to render instead of blank
 const noData = <span>no data</span>;
 
-// do not use component
+// Do not use component
 // const noData = () => <span>no data</span>;
 
 <LoopItem target={Item} list={model} instead={noData} />;
@@ -233,7 +233,7 @@ const AnchorList = ({ list, each }) => (
   />
 );
 
-// check target props
+// Check target props
 const Item = ({ label, href, onClick }) => (
   <li className={style["li-style"]}>
     <a href={href} onClick={onClick}>
@@ -242,7 +242,7 @@ const Item = ({ label, href, onClick }) => (
   </li>
 );
 
-// what to display instead of the <ul>
+// What to display instead of the <ul>
 const noData = <div>no data</div>;
 
 export default AnchorList;
@@ -256,7 +256,7 @@ import { LoopItem } from "react-loop-item";
 
 import style from "./Tags.module.css";
 
-// if you already know about raw datas,
+// If you already know about raw datas,
 // define <Item> props formatter in this component.
 const Tags = ({ list }) => (
   <p className={style["p-style"]}>
@@ -268,7 +268,7 @@ const Item = ({ value }) => (
   <span className={style["span-style"]}>{value}</span>
 );
 
-// convert string to <Item> props
+// Convert string to <Item> props
 const getProps = (text, index) => ({
   value: text,
 });
@@ -291,14 +291,14 @@ const ListContainer = () => {
     { url: "ccc.com", description: "ccc site", visited: 8 },
   ];
 
-  // formatter for <Item> props of <AnchorList>
+  // Formatter for <Item> props of <AnchorList>
   const getProps = (data, index) => {
     // raw datas (element and index of siteList)
     const { url, description, visited } = data;
 
-    // props
+    // Props
     return {
-      key: url, // if key is omitted, index is used
+      key: url, // If key is omitted, index is used
       label: description,
       href: url,
       onClick(event) {
@@ -313,7 +313,7 @@ const ListContainer = () => {
 
   return (
     <div>
-      {/* your components */}
+      {/* Your components */}
       <AnchorList list={siteList} each={getProps} />
       <Tags list={tagList} />
     </div>
@@ -335,23 +335,23 @@ import React from "react";
 import AnchorList from "./AnchorList";
 
 const ListContainer = () => {
-  // code to manage model
+  // Code to manage model
   // ...
 
   const updateVisited = (url, count) => {
-    // do something for updating model
+    // Do something for updating model
   };
 
-  // callbacks injector for <Item> of <AnchorList>
+  // Callbacks injector for <Item> of <AnchorList>
   const getItemCallbacks = (data, index) => {
     const { url, description, visited } = data;
 
-    // callbacks
+    // Callbacks
     return {
       onClick(event) {
         event.preventDefault();
 
-        // update visited
+        // Update visited
         updateVisited(url, visited + 1);
       },
     };
@@ -359,7 +359,7 @@ const ListContainer = () => {
 
   return (
     <div>
-      {/* your component */}
+      {/* Your component */}
       <AnchorList list={model} each={getItemCallbacks} />
     </div>
   );
@@ -376,17 +376,17 @@ import style from "./AnchorList.module.css";
 
 // <AnchorList> needs raw datas and <Item> callbacks injector.
 const AnchorList = ({ list, each }) => {
-  // formatter for <Item> props
+  // Formatter for <Item> props
   const getItemProps = (data, index) => {
     const { url, description, visited } = data;
 
     return {
-      // properties
+      // Properties
       key: url,
       href: url,
       label: description,
 
-      // inject <Item> callbacks
+      // Inject <Item> callbacks
       ...each(data, index),
     };
   };
@@ -398,7 +398,7 @@ const AnchorList = ({ list, each }) => {
   );
 };
 
-// check target props
+// Check target props
 const Item = ({ label, href, onClick }) => (
   <li className={style["li-style"]}>
     <a href={href} onClick={onClick}>
@@ -420,17 +420,17 @@ For this to work smoothly, you need to manage the elements of the `list` as immu
 import React, { useReducer, useCallback } from "react";
 import { ListWrap } from "react-loop-item";
 
-// demo data
+// Demo data
 const siteList = [
   { url: "aaa.com", description: "aaa site", visited: 4 },
   { url: "bbb.com", description: "bbb site", visited: 2 },
   { url: "ccc.com", description: "ccc site", visited: 8 },
 ];
 
-// list reducer
+// List reducer
 const reducer = (state, url) =>
   state.map((item) =>
-    // returns new object only if it is a target.
+    // Returns new object only if it is a target.
     item.url !== url
       ? item
       : {
@@ -440,10 +440,10 @@ const reducer = (state, url) =>
   );
 
 const MemoList = () => {
-  // visit is dispatch
+  // Visit is dispatch
   const [list, visit] = useReducer(reducer, siteList);
 
-  // cached each
+  // Cached each
   const each = useCallback(
     (data, index) => ({
       ...data,
@@ -452,15 +452,17 @@ const MemoList = () => {
         visit(data.url);
       },
     }),
-    [visit] // visit does not change the reference
+    [visit] // Visit does not change the reference
   );
 
-  // try changing memo
-  return <ListWrap tag="ul" target={Anchor} list={list} each={each} memo />;
+  // Try changing memo
+  return (
+    <ListWrap tag="ul" target={Anchor} list={list} each={each} memo="url" />
+  );
 };
 
 const Anchor = ({ url, description, visited, onClick }) => {
-  // check rendering
+  // Check rendering
   console.log("rendering!", url);
   return (
     <li>
